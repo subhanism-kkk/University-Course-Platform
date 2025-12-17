@@ -45,6 +45,18 @@ public class EnrollmentService {
         return EnrollmentMapper.toResponse(savedEnrollment);
     }
 
+    public EnrollmentResponse changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status){
+        var enrollment = fetchEnrollmentById(enrollmentId);
+
+        if (enrollment.getEnrollmentStatus() == EnrollmentStatus.DROPPED) {
+            throw new BadRequestException("Dropped enrollment cannot be updated");
+        }
+
+        enrollment.setEnrollmentStatus(status);
+        var savedEnrollment = enrollmentRepository.save(enrollment);
+
+        return EnrollmentMapper.toResponse(savedEnrollment);
+    }
 
     public Student fetchStudentById(Long id) {
         return studentRepository.findById(id).orElseThrow(() -> new NotFoundException("Student not found"));
@@ -52,5 +64,9 @@ public class EnrollmentService {
 
     public Course fetchCourseById(Long id) {
         return courseRepository.findById(id).orElseThrow(() -> new NotFoundException("Course not found"));
+    }
+
+    public Enrollment fetchEnrollmentById(Long id){
+        return enrollmentRepository.findById(id).orElseThrow(()-> new NotFoundException("Enrollment not found"));
     }
 }
