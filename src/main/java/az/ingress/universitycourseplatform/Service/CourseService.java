@@ -14,6 +14,7 @@ import az.ingress.universitycourseplatform.Repository.CourseRepository;
 import az.ingress.universitycourseplatform.Repository.DepartmentRepository;
 import az.ingress.universitycourseplatform.Repository.EnrollmentRepository;
 import az.ingress.universitycourseplatform.Repository.InstructorRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,7 @@ public class CourseService {
     private final EnrollmentRepository enrollmentRepository;
     private final CourseMapper courseMapper;
 
+    @Transactional
     public CourseResponse createCourse(CourseRequest request) {
         var course = CourseMapper.toEntity(request);
         var savedCourse = courseRepository.save(course);
@@ -37,6 +39,7 @@ public class CourseService {
         return CourseMapper.toResponse(savedCourse);
     }
 
+    @Transactional
     public CourseResponse updateCourse(Long id, CourseRequest request) {
         var course = fetchCourseById(id);
 
@@ -62,6 +65,7 @@ public class CourseService {
         return CourseMapper.toResponse(fetchCourseById(id));
     }
 
+    @Transactional
     public void deleteCourse(Long id) {
         var course = fetchCourseById(id);
         course.setDeleted(true);

@@ -10,6 +10,7 @@ import az.ingress.universitycourseplatform.Model.dto.student.StudentRequest;
 import az.ingress.universitycourseplatform.Model.dto.student.StudentResponse;
 import az.ingress.universitycourseplatform.Repository.EnrollmentRepository;
 import az.ingress.universitycourseplatform.Repository.StudentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +25,7 @@ public class StudentService {
     private final EnrollmentRepository enrollmentRepository;
     private final StudentMapper studentMapper;
 
-
+    @Transactional
     public StudentResponse createStudent(StudentRequest request) {
         var student = StudentMapper.toEntity(request);
         var savedStudent = studentRepository.save(student);
@@ -32,6 +33,7 @@ public class StudentService {
         return StudentMapper.toResponse(savedStudent);
     }
 
+    @Transactional
     public StudentResponse updateStudent(Long id, StudentRequest request) {
         var student = fetchStudentById(id);
 
@@ -46,6 +48,7 @@ public class StudentService {
         return StudentMapper.toResponse(fetchStudentById(id));
     }
 
+    @Transactional
     public void deleteStudent(Long id) {
         var student = fetchStudentById(id);
 
@@ -68,6 +71,7 @@ public class StudentService {
                 .toList();
     }
 
+    @Transactional
     public void restoreStudent(Long id) {
         // Use the custom method that ignores the soft-delete filter
         Student student = studentRepository.findByIdWithDeleted(id)

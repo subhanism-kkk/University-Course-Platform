@@ -12,6 +12,7 @@ import az.ingress.universitycourseplatform.Model.dto.instructor.InstructorRespon
 import az.ingress.universitycourseplatform.Repository.CourseRepository;
 import az.ingress.universitycourseplatform.Repository.DepartmentRepository;
 import az.ingress.universitycourseplatform.Repository.InstructorRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class InstructorService {
     private final DepartmentRepository departmentRepository;
     private final CourseRepository courseRepository;
 
-
+    @Transactional
     public InstructorResponse createInstructor(InstructorRequest request) {
         var instructor = InstructorMapper.toEntity(request);
         var savedInstructor = instructorRepository.save(instructor);
@@ -34,6 +35,7 @@ public class InstructorService {
         return InstructorMapper.toResponse(savedInstructor);
     }
 
+    @Transactional
     public InstructorResponse updateInstructor(Long id, InstructorRequest request) {
         var instructor = fetchInstructorById(id);
         var updatedInstructor = InstructorMapper.updateEntityFromRequest(instructor, request);
@@ -63,6 +65,7 @@ public class InstructorService {
                 .toList();
     }
 
+    @Transactional
     public void deleteInstructor(Long id) {
         var instructor = fetchInstructorById(id);
         instructor.setDeleted(true);

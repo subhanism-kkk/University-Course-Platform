@@ -10,6 +10,7 @@ import az.ingress.universitycourseplatform.Model.dto.department.DepartmentReques
 import az.ingress.universitycourseplatform.Model.dto.department.DepartmentResponse;
 import az.ingress.universitycourseplatform.Repository.CourseRepository;
 import az.ingress.universitycourseplatform.Repository.DepartmentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final CourseRepository courseRepository;
 
+    @Transactional
     public DepartmentResponse createDepartment(DepartmentRequest request) {
         var department = DepartmentMapper.toEntity(request);
         var savedDepartment = departmentRepository.save(department);
@@ -29,6 +31,7 @@ public class DepartmentService {
         return DepartmentMapper.toResponse(savedDepartment);
     }
 
+    @Transactional
     public DepartmentResponse updateDepartment(Long id, DepartmentRequest request) {
         var department = fetchDepartment(id);
         var updatedDepartment = DepartmentMapper.updateEntityFromRequest(department, request);
@@ -40,6 +43,7 @@ public class DepartmentService {
         return DepartmentMapper.toResponse(fetchDepartment(id));
     }
 
+    @Transactional
     public void deleteDepartment(Long id) {
         var department = fetchDepartment(id);
 
