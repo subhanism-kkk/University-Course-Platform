@@ -1,1 +1,14 @@
-spring.application.name=University Course Platform
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Uni_Course_Platform
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true

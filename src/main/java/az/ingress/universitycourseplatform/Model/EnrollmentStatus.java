@@ -1,7 +1,8 @@
-package az.ingress.universitycourseplatform;
+package az.ingress.universitycourseplatform.Model;
 
 public enum EnrollmentStatus {
     ACTIVE,
     COMPLETED,
-    DROPPED
+    DROPPED,
+    DELETED;
 }

@@ -1,4 +1,9 @@
 package az.ingress.universitycourseplatform.Repository;
 
-public interface InstructorRepository {
+import az.ingress.universitycourseplatform.Entity.Instructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface InstructorRepository extends JpaRepository<Instructor, Long> {
+    boolean existsByEmail(String email);
 }
+
