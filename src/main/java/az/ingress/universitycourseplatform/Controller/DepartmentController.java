@@ -26,7 +26,7 @@ public class DepartmentController {
 
     @PutMapping("/{id}")
     @ResponseStatus(OK)
-    public DepartmentResponse updateDepartment(@PathVariable Long id,@RequestBody DepartmentRequest request) {
+    public DepartmentResponse updateDepartment(@PathVariable Long id, @RequestBody DepartmentRequest request) {
         return departmentService.updateDepartment(id, request);
     }
 
