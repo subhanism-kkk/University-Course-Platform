@@ -6,6 +6,7 @@ import az.ingress.universitycourseplatform.Entity.Student;
 import az.ingress.universitycourseplatform.Mapper.EnrollmentMapper;
 import az.ingress.universitycourseplatform.Model.EnrollmentStatus;
 import az.ingress.universitycourseplatform.Model.NotFoundException;
+import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentRequest;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentResponse;
 import az.ingress.universitycourseplatform.Repository.CourseRepository;
 import az.ingress.universitycourseplatform.Repository.EnrollmentRepository;
@@ -26,12 +27,12 @@ public class EnrollmentService {
     private final CourseRepository courseRepository;
 
     @Transactional
-    public EnrollmentResponse enrollStudent(Long courseId, Long studentId) {
-        var course = fetchCourseById(courseId);
-        var student = fetchStudentById(studentId);
+    public EnrollmentResponse enrollStudent(EnrollmentRequest request) {
+        var course = fetchCourseById(request.getCourseId());
+        var student = fetchStudentById(request.getStudentId());
 
         // prevent duplicate enrollment
-        if (enrollmentRepository.existsByStudentIdAndCourseId(studentId, courseId)) {
+        if (enrollmentRepository.existsByStudentIdAndCourseId(request.getStudentId(), request.getCourseId())) {
             throw new BadRequestException("Student already enrolled in this course");
         }
 

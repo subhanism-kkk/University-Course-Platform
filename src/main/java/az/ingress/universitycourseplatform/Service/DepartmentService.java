@@ -39,7 +39,7 @@ public class DepartmentService {
         return DepartmentMapper.toResponse(updatedDepartment);
     }
 
-    public DepartmentResponse getDepartmentById(Long id){
+    public DepartmentResponse getDepartmentById(Long id) {
         return DepartmentMapper.toResponse(fetchDepartment(id));
     }
 
@@ -65,7 +65,7 @@ public class DepartmentService {
     }
 
 
-        public Department fetchDepartment(Long id) {
+    public Department fetchDepartment(Long id) {
         return departmentRepository.findById(id).orElseThrow(() -> new NotFoundException("Student not Found"));
     }
 }
