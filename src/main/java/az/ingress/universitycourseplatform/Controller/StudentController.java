@@ -1,10 +1,13 @@
 package az.ingress.universitycourseplatform.Controller;
 
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentResponse;
 import az.ingress.universitycourseplatform.Model.dto.student.StudentRequest;
 import az.ingress.universitycourseplatform.Model.dto.student.StudentResponse;
 import az.ingress.universitycourseplatform.Service.StudentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +33,16 @@ public class StudentController {
                                          @RequestBody StudentRequest request) {
         return studentService.updateStudent(id, request);
     }
+
+    @GetMapping
+    public CustomPage<StudentResponse> getAllStudents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return studentService.getAllStudents(pageable);
+    }
+
 
     @GetMapping("/{id}")
     @ResponseStatus(OK)

@@ -4,6 +4,7 @@ import az.ingress.universitycourseplatform.Entity.Enrollment;
 import az.ingress.universitycourseplatform.Entity.Student;
 import az.ingress.universitycourseplatform.Mapper.EnrollmentMapper;
 import az.ingress.universitycourseplatform.Mapper.StudentMapper;
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.NotFoundException;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentResponse;
 import az.ingress.universitycourseplatform.Model.dto.student.StudentRequest;
@@ -12,6 +13,8 @@ import az.ingress.universitycourseplatform.Repository.EnrollmentRepository;
 import az.ingress.universitycourseplatform.Repository.StudentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,6 +46,20 @@ public class StudentService {
 
         return StudentMapper.toResponse(updatedStudent);
     }
+
+    public CustomPage<StudentResponse> getAllStudents(Pageable pageable) {
+
+        Page<StudentResponse> page =
+                studentRepository.findAll(pageable)
+                        .map(StudentMapper::toResponse);
+
+        return new CustomPage<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize()
+        );
+    }
+
 
     public StudentResponse getStudentsById(Long id) {
         return StudentMapper.toResponse(fetchStudentById(id));
