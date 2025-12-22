@@ -43,7 +43,6 @@ public class StudentController {
         return studentService.getAllStudents(pageable);
     }
 
-
     @GetMapping("/{id}")
     @ResponseStatus(OK)
     public StudentResponse getStudentById(@PathVariable Long id) {
