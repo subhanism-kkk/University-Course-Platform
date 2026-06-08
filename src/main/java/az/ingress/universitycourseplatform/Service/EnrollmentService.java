@@ -34,16 +34,20 @@ public class EnrollmentService {
         var course = fetchCourseById(request.getCourseId());
         var student = fetchStudentById(request.getStudentId());
 
-        // prevent duplicate enrollment
         if (enrollmentRepository.existsByStudentIdAndCourseId(request.getStudentId(), request.getCourseId())) {
             throw new BadRequestException("Student already enrolled in this course");
         }
 
         var enrollment = EnrollmentMapper.toEntity(student, course);
-
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 
-        return EnrollmentMapper.toResponse(savedEnrollment);
+        // FIX: Explicitly stitch the fetched relationships into the response target
+        // to bypass the uninitialized lazy-loading session proxy completely!
+        EnrollmentResponse response = EnrollmentMapper.toResponse(savedEnrollment);
+        response.setStudentName(student.getFullName());
+        response.setCourseTitle(course.getTitle());
+
+        return response;
     }
 
     @Transactional

@@ -60,11 +60,11 @@ public class EnrollmentController {
         return enrollmentService.getEnrollmentsByStudent(studentId);
     }
 
-    @GetMapping("/courses/{coursesId}/enrollments")
+    @GetMapping("/courses/{courseId}/enrollments")
     @ResponseStatus(OK)
     public List<EnrollmentResponse> getEnrollmentsByCourse(
-            @PathVariable Long coursesId) {
-        return enrollmentService.getEnrollmentsByCourse(coursesId);
+            @PathVariable Long courseId) {
+        return enrollmentService.getEnrollmentsByCourse(courseId);
     }
 
     @DeleteMapping("/{id}")
