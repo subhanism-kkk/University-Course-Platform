@@ -34,9 +34,17 @@ public class InstructorService {
     @Transactional
     public InstructorResponse createInstructor(InstructorRequest request) {
         var instructor = InstructorMapper.toEntity(request);
-        var savedInstructor = instructorRepository.save(instructor);
 
-        return InstructorMapper.toResponse(savedInstructor);
+        if (request.getDepartmentId() != null){
+            var department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new NotFoundException("Department not found"));
+
+            instructor.setDepartment(department);
+        }
+
+       instructorRepository.save(instructor);
+
+        return InstructorMapper.toResponse(instructor);
     }
 
     @Transactional
