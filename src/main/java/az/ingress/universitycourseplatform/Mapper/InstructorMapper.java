@@ -1,8 +1,10 @@
 package az.ingress.universitycourseplatform.Mapper;
 
+import az.ingress.universitycourseplatform.Entity.Department;
 import az.ingress.universitycourseplatform.Entity.Instructor;
 import az.ingress.universitycourseplatform.Model.dto.instructor.InstructorRequest;
 import az.ingress.universitycourseplatform.Model.dto.instructor.InstructorResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +19,7 @@ public class InstructorMapper {
         return instructor;
     }
 
-    public static InstructorResponse toResponse(Instructor instructor) {
+    public static InstructorResponse toResponse(@NonNull Instructor instructor) {
         InstructorResponse response = new InstructorResponse();
         response.setId(instructor.getId());
         response.setFullName(instructor.getFullName());
@@ -31,7 +33,7 @@ public class InstructorMapper {
         return response;
     }
 
-    public static Instructor updateEntityFromRequest(Instructor entity, InstructorRequest request) {
+    public static Instructor updateEntityFromRequest(Instructor entity, InstructorRequest request, Department department) {
 
         if (request.getFullName() != null) {
             entity.setFullName(request.getFullName());
@@ -41,6 +43,9 @@ public class InstructorMapper {
             entity.setEmail(request.getEmail());
         }
 
+        if (request.getDepartmentId() != null){
+            entity.setDepartment(department);
+        }
 
         return entity;
     }

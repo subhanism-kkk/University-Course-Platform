@@ -40,11 +40,11 @@ public class StudentService {
     public StudentResponse updateStudent(Long id, StudentRequest request) {
         var student = fetchStudentById(id);
 
-        var updatedStudent = StudentMapper.updateEntityFromRequest(student, request);
+        StudentMapper.updateEntityFromRequest(student, request);
 
-        studentRepository.save(updatedStudent);
+        studentRepository.save(student);
 
-        return StudentMapper.toResponse(updatedStudent);
+        return StudentMapper.toResponse(student);
     }
 
     public CustomPage<StudentResponse> getAllStudents(Pageable pageable) {

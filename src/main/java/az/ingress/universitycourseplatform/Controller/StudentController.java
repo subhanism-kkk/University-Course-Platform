@@ -58,7 +58,7 @@ public class StudentController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(NO_CONTENT)
-    public void deleteInstructor(@PathVariable Long id) {
+    public void deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
     }
 }

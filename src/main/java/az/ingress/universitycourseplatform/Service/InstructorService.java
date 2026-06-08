@@ -5,6 +5,7 @@ import az.ingress.universitycourseplatform.Entity.Department;
 import az.ingress.universitycourseplatform.Entity.Instructor;
 import az.ingress.universitycourseplatform.Mapper.CourseMapper;
 import az.ingress.universitycourseplatform.Mapper.InstructorMapper;
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.NotFoundException;
 import az.ingress.universitycourseplatform.Model.dto.course.CourseResponse;
 import az.ingress.universitycourseplatform.Model.dto.instructor.InstructorRequest;
@@ -13,7 +14,10 @@ import az.ingress.universitycourseplatform.Repository.CourseRepository;
 import az.ingress.universitycourseplatform.Repository.DepartmentRepository;
 import az.ingress.universitycourseplatform.Repository.InstructorRepository;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -38,23 +42,39 @@ public class InstructorService {
     @Transactional
     public InstructorResponse updateInstructor(Long id, InstructorRequest request) {
         var instructor = fetchInstructorById(id);
-        var updatedInstructor = InstructorMapper.updateEntityFromRequest(instructor, request);
 
-        if (request.getDepartmentId() != null) {
-            Department department = departmentRepository.findById(request.getDepartmentId())
+        Department newDepartment = null;
+
+        if (request.getDepartmentId() != null){
+            newDepartment = departmentRepository.findById(request.getDepartmentId())
                     .orElseThrow(() -> new NotFoundException("Department not found"));
         }
 
-        instructorRepository.save(updatedInstructor);
+       InstructorMapper.updateEntityFromRequest(instructor, request, newDepartment);
 
-        return InstructorMapper.toResponse(updatedInstructor);
+        instructorRepository.save(instructor);
+
+        return InstructorMapper.toResponse(instructor);
     }
 
-    public InstructorResponse getInstructorById(Long id) {
+    public CustomPage<InstructorResponse> getAllInstructors(Pageable pageable) {
+
+        Page<InstructorResponse> page =
+                instructorRepository.findAll(pageable)
+                        .map(InstructorMapper::toResponse);
+
+        return new CustomPage<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize()
+        );
+    }
+
+        public InstructorResponse getInstructorById(Long id) {
         return InstructorMapper.toResponse(fetchInstructorById(id));
     }
 
-    public List<CourseResponse> getCoursesTaughtByInstructor(Long instructorId){
+    public List<CourseResponse> getCoursesTaughtByInstructor(Long instructorId) {
         // checking if it exists
         fetchInstructorById(instructorId);
 

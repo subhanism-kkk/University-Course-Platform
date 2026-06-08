@@ -3,6 +3,7 @@ package az.ingress.universitycourseplatform.Mapper;
 import az.ingress.universitycourseplatform.Entity.Department;
 import az.ingress.universitycourseplatform.Model.dto.department.DepartmentRequest;
 import az.ingress.universitycourseplatform.Model.dto.department.DepartmentResponse;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ public class DepartmentMapper {
         return department;
     }
 
-    public static DepartmentResponse toResponse(Department department) {
+    public static DepartmentResponse toResponse(@NonNull Department department) {
         DepartmentResponse response = new DepartmentResponse();
         response.setId(department.getId());
         response.setName(department.getName());

@@ -1,10 +1,13 @@
 package az.ingress.universitycourseplatform.Controller;
 
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.EnrollmentStatus;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentRequest;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentResponse;
 import az.ingress.universitycourseplatform.Service.EnrollmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +35,16 @@ public class EnrollmentController {
         return enrollmentService.changeEnrollmentStatus(enrollmentId, status);
     }
 
+    @GetMapping
+    public CustomPage<EnrollmentResponse> getAllEnrollments(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return enrollmentService.getAllEnrollments(pageable);
+    }
+
     @GetMapping("/enrollments/{id}")
     @ResponseStatus(OK)
     public EnrollmentResponse getEnrollmentById(@PathVariable Long id) {
@@ -40,6 +53,8 @@ public class EnrollmentController {
 
     @GetMapping("/students/{studentId}/enrollments")
     @ResponseStatus(OK)
+    //Which courses has a specific student enrolled in
+    // GET http://localhost:8080/api/v1/enrollments/students/4/enrollments //!!!TRY THIS!!!
     public List<EnrollmentResponse> getEnrollmentsByStudent(
             @PathVariable Long studentId) {
         return enrollmentService.getEnrollmentsByStudent(studentId);

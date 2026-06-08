@@ -4,6 +4,7 @@ import az.ingress.universitycourseplatform.Entity.Course;
 import az.ingress.universitycourseplatform.Entity.Enrollment;
 import az.ingress.universitycourseplatform.Entity.Student;
 import az.ingress.universitycourseplatform.Mapper.EnrollmentMapper;
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.EnrollmentStatus;
 import az.ingress.universitycourseplatform.Model.NotFoundException;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentRequest;
@@ -14,6 +15,8 @@ import az.ingress.universitycourseplatform.Repository.StudentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import az.ingress.universitycourseplatform.Model.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,19 +39,15 @@ public class EnrollmentService {
             throw new BadRequestException("Student already enrolled in this course");
         }
 
-        Enrollment enrollment = new Enrollment();
-
-        enrollment.setStudent(student);
-        enrollment.setCourse(course);
-        enrollment.setEnrollmentStatus(EnrollmentStatus.ACTIVE);
-        enrollment.setEnrolledAt(LocalDateTime.now());
+        var enrollment = EnrollmentMapper.toEntity(student, course);
 
         Enrollment savedEnrollment = enrollmentRepository.save(enrollment);
 
         return EnrollmentMapper.toResponse(savedEnrollment);
     }
+
     @Transactional
-    public EnrollmentResponse changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status){
+    public EnrollmentResponse changeEnrollmentStatus(Long enrollmentId, EnrollmentStatus status) {
         var enrollment = fetchEnrollmentById(enrollmentId);
 
         if (enrollment.getEnrollmentStatus() == EnrollmentStatus.DROPPED) {
@@ -61,11 +60,24 @@ public class EnrollmentService {
         return EnrollmentMapper.toResponse(savedEnrollment);
     }
 
-    public EnrollmentResponse getEnrollmentById(Long enrollmentId){
+    public CustomPage<EnrollmentResponse> getAllEnrollments(Pageable pageable) {
+        Page<EnrollmentResponse> page =
+                enrollmentRepository.findAll(pageable)
+                        .map(EnrollmentMapper::toResponse);
+
+        return new CustomPage<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize()
+        );
+    }
+
+    public EnrollmentResponse getEnrollmentById(Long enrollmentId) {
         return EnrollmentMapper.toResponse(fetchEnrollmentById(enrollmentId));
     }
 
-    public List<EnrollmentResponse> getEnrollmentsByStudent(Long studentId){
+    //Which courses has a specific student enrolled in
+    public List<EnrollmentResponse> getEnrollmentsByStudent(Long studentId) {
 
         //checking if the student exists
         fetchStudentById(studentId);
@@ -77,7 +89,7 @@ public class EnrollmentService {
                 .toList();
     }
 
-    public List<EnrollmentResponse> getEnrollmentsByCourse(Long courseId){
+    public List<EnrollmentResponse> getEnrollmentsByCourse(Long courseId) {
 
         //checking if the course exists
         fetchCourseById(courseId);
@@ -88,8 +100,9 @@ public class EnrollmentService {
                 .map(EnrollmentMapper::toResponse)
                 .toList();
     }
+
     @Transactional
-    public void deleteEnrollment(Long enrollmentId){
+    public void deleteEnrollment(Long enrollmentId) {
         var enrollment = fetchEnrollmentById(enrollmentId);
 
         enrollment.setDeleted(true);
@@ -106,7 +119,7 @@ public class EnrollmentService {
         return courseRepository.findById(id).orElseThrow(() -> new NotFoundException("Course not found"));
     }
 
-    public Enrollment fetchEnrollmentById(Long id){
-        return enrollmentRepository.findById(id).orElseThrow(()-> new NotFoundException("Enrollment not found"));
+    public Enrollment fetchEnrollmentById(Long id) {
+        return enrollmentRepository.findById(id).orElseThrow(() -> new NotFoundException("Enrollment not found"));
     }
 }

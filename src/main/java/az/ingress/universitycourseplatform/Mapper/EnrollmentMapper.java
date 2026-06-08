@@ -1,9 +1,14 @@
 package az.ingress.universitycourseplatform.Mapper;
 
+import az.ingress.universitycourseplatform.Entity.Course;
 import az.ingress.universitycourseplatform.Entity.Enrollment;
+import az.ingress.universitycourseplatform.Entity.Student;
+import az.ingress.universitycourseplatform.Model.EnrollmentStatus;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -26,6 +31,18 @@ public class EnrollmentMapper {
         }
 
         return response;
+    }
+
+
+    public  static Enrollment toEntity(Student student, Course course){
+        Enrollment enrollment = new Enrollment();
+
+        enrollment.setStudent(student);
+        enrollment.setCourse(course);
+        enrollment.setEnrollmentStatus(EnrollmentStatus.ACTIVE);
+        enrollment.setEnrolledAt(LocalDateTime.now());
+
+        return enrollment;
     }
 }
 

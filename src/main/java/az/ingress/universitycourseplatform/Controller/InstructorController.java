@@ -1,10 +1,13 @@
 package az.ingress.universitycourseplatform.Controller;
 
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.dto.course.CourseResponse;
 import az.ingress.universitycourseplatform.Model.dto.instructor.InstructorRequest;
 import az.ingress.universitycourseplatform.Model.dto.instructor.InstructorResponse;
 import az.ingress.universitycourseplatform.Service.InstructorService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +34,15 @@ public class InstructorController {
             @PathVariable Long id,
             @RequestBody InstructorRequest request) {
         return instructorService.updateInstructor(id, request);
+    }
+
+    @GetMapping
+    public CustomPage<InstructorResponse> getAllInstructors(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return instructorService.getAllInstructors(pageable);
     }
 
     @GetMapping("/{id}")

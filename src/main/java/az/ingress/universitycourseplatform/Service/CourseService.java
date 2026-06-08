@@ -6,6 +6,7 @@ import az.ingress.universitycourseplatform.Entity.Enrollment;
 import az.ingress.universitycourseplatform.Entity.Instructor;
 import az.ingress.universitycourseplatform.Mapper.CourseMapper;
 import az.ingress.universitycourseplatform.Mapper.EnrollmentMapper;
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.NotFoundException;
 import az.ingress.universitycourseplatform.Model.dto.course.CourseRequest;
 import az.ingress.universitycourseplatform.Model.dto.course.CourseResponse;
@@ -16,6 +17,8 @@ import az.ingress.universitycourseplatform.Repository.EnrollmentRepository;
 import az.ingress.universitycourseplatform.Repository.InstructorRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -43,22 +46,35 @@ public class CourseService {
     public CourseResponse updateCourse(Long id, CourseRequest request) {
         var course = fetchCourseById(id);
 
-        var updatedCourse = CourseMapper.updateEntityFromRequest(course, request);
+        CourseMapper.updateEntityFromRequest(course, request);
 
         if (request.getDepartmentId() != null) {
             Department department = departmentRepository.findById(request.getDepartmentId()).
                     orElseThrow(() -> new NotFoundException("Department not found"));
-            updatedCourse.setDepartment(department);
+            course.setDepartment(department);
         }
 
         if (request.getInstructorId() != null) {
             Instructor instructor = instructorRepository.findById(request.getInstructorId()).
                     orElseThrow(() -> new NotFoundException("Instructor not found"));
-            updatedCourse.setInstructor(instructor);
+            course.setInstructor(instructor);
         }
-        courseRepository.save(updatedCourse);
+        courseRepository.save(course);
 
-        return CourseMapper.toResponse(updatedCourse);
+        return CourseMapper.toResponse(course);
+    }
+
+    public CustomPage<CourseResponse> getAllCourses(Pageable pageable) {
+
+        Page<CourseResponse> page =
+                courseRepository.findAll(pageable)
+                        .map(CourseMapper::toResponse);
+
+        return new CustomPage<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize()
+        );
     }
 
     public CourseResponse getCourseById(Long id) {

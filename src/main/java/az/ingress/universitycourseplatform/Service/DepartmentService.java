@@ -4,6 +4,7 @@ import az.ingress.universitycourseplatform.Entity.Course;
 import az.ingress.universitycourseplatform.Entity.Department;
 import az.ingress.universitycourseplatform.Mapper.CourseMapper;
 import az.ingress.universitycourseplatform.Mapper.DepartmentMapper;
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.NotFoundException;
 import az.ingress.universitycourseplatform.Model.dto.course.CourseResponse;
 import az.ingress.universitycourseplatform.Model.dto.department.DepartmentRequest;
@@ -12,6 +13,8 @@ import az.ingress.universitycourseplatform.Repository.CourseRepository;
 import az.ingress.universitycourseplatform.Repository.DepartmentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,9 +37,22 @@ public class DepartmentService {
     @Transactional
     public DepartmentResponse updateDepartment(Long id, DepartmentRequest request) {
         var department = fetchDepartment(id);
-        var updatedDepartment = DepartmentMapper.updateEntityFromRequest(department, request);
-        departmentRepository.save(updatedDepartment);
-        return DepartmentMapper.toResponse(updatedDepartment);
+        DepartmentMapper.updateEntityFromRequest(department, request);
+        departmentRepository.save(department);
+        return DepartmentMapper.toResponse(department);
+    }
+
+    public CustomPage<DepartmentResponse> getAllDepartments(Pageable pageable) {
+
+        Page<DepartmentResponse> page =
+                departmentRepository.findAll(pageable)
+                        .map(DepartmentMapper::toResponse);
+
+        return new CustomPage<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize()
+        );
     }
 
     public DepartmentResponse getDepartmentById(Long id) {
@@ -66,6 +82,6 @@ public class DepartmentService {
 
 
     public Department fetchDepartment(Long id) {
-        return departmentRepository.findById(id).orElseThrow(() -> new NotFoundException("Student not Found"));
+        return departmentRepository.findById(id).orElseThrow(() -> new NotFoundException("Department not Found"));
     }
 }

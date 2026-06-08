@@ -1,10 +1,13 @@
 package az.ingress.universitycourseplatform.Controller;
 
+import az.ingress.universitycourseplatform.Model.CustomPage;
 import az.ingress.universitycourseplatform.Model.dto.course.CourseRequest;
 import az.ingress.universitycourseplatform.Model.dto.course.CourseResponse;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentResponse;
 import az.ingress.universitycourseplatform.Service.CourseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +30,15 @@ public class CourseController {
     @ResponseStatus(OK)
     public CourseResponse updateCourse(@PathVariable Long id, @RequestBody CourseRequest request) {
         return courseService.updateCourse(id, request);
+    }
+
+    @GetMapping
+    public CustomPage<CourseResponse> getAllCourses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return courseService.getAllCourses(pageable);
     }
 
     @GetMapping("/{id}")
