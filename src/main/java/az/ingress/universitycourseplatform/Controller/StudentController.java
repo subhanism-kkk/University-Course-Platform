@@ -8,6 +8,7 @@ import az.ingress.universitycourseplatform.Service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -61,5 +62,12 @@ public class StudentController {
     public void deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
     }
+
+    @PatchMapping("/{id}/restore")
+    @ResponseStatus(HttpStatus.OK)
+    public void restoreStudent(@PathVariable Long id) {
+        studentService.restoreStudent(id);
+    }
+
 }
 

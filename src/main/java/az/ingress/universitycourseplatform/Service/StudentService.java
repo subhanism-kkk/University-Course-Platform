@@ -5,6 +5,7 @@ import az.ingress.universitycourseplatform.Entity.Student;
 import az.ingress.universitycourseplatform.Mapper.EnrollmentMapper;
 import az.ingress.universitycourseplatform.Mapper.StudentMapper;
 import az.ingress.universitycourseplatform.Model.CustomPage;
+import az.ingress.universitycourseplatform.Model.EnrollmentStatus;
 import az.ingress.universitycourseplatform.Model.NotFoundException;
 import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentResponse;
 import az.ingress.universitycourseplatform.Model.dto.student.StudentRequest;
@@ -67,11 +68,21 @@ public class StudentService {
 
     @Transactional
     public void deleteStudent(Long id) {
-        var student = fetchStudentById(id);
+
+        Student student = fetchStudentById(id);
 
         student.setDeleted(true);
         student.setDeletedAt(LocalDateTime.now());
         studentRepository.save(student);
+
+        // Soft-delete all of this student's enrollments so they don't break GET requests!
+        List<Enrollment> activeEnrollments = enrollmentRepository.findByStudentIdAndDeletedFalse(id);
+        for (Enrollment enrollment : activeEnrollments) {
+            enrollment.setDeleted(true);
+            enrollment.setDeletedAt(LocalDateTime.now());
+            enrollment.setEnrollmentStatus(EnrollmentStatus.DROPPED);
+        }
+        enrollmentRepository.saveAll(activeEnrollments);
     }
 
     public List<EnrollmentResponse> getStudentEnrollments(Long studentId) {
@@ -90,20 +101,25 @@ public class StudentService {
 
     @Transactional
     public void restoreStudent(Long id) {
-        // Use the custom method that ignores the soft-delete filter
         Student student = studentRepository.findByIdWithDeleted(id)
                 .orElseThrow(() -> new RuntimeException("Student not found with ID: " + id));
 
-        // Validation check (optional, but good practice)
         if (!student.isDeleted()) {
             throw new RuntimeException("Student with ID: " + id + " is already active.");
         }
 
         student.setDeleted(false);
         student.setDeletedAt(null);
-
-        // IMPORTANT: Must save the changes back to the database
         studentRepository.save(student);
+
+        // Optional: Resurrect their soft-deleted enrollments automatically
+        List<Enrollment> deletedEnrollments = enrollmentRepository.findByStudentIdAndDeletedTrue(id);
+        for (Enrollment enrollment : deletedEnrollments) {
+            enrollment.setDeleted(false);
+            enrollment.setDeletedAt(null);
+            enrollment.setEnrollmentStatus(EnrollmentStatus.ACTIVE);
+        }
+        enrollmentRepository.saveAll(deletedEnrollments);
     }
 
     public Student fetchStudentById(Long id) {

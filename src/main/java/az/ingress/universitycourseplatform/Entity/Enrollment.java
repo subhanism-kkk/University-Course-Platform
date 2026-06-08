@@ -9,13 +9,13 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "enrollment")
+@Table(name = "enrollments")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id", callSuper = false)
-@ToString
+@ToString(exclude = {"student", "course"}) // Prevents infinite logging loops
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SQLRestriction("deleted = false")
 public class Enrollment extends BaseEntity {
@@ -24,15 +24,18 @@ public class Enrollment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", nullable = false)
     Student student;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
     Course course;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "enrollment_status", nullable = false)
     EnrollmentStatus enrollmentStatus;
 
+    @Column(name = "enrolled_at")
     LocalDateTime enrolledAt;
 }

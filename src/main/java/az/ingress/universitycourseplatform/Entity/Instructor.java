@@ -12,10 +12,11 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id", callSuper = false)
-@ToString
+@ToString(exclude = "department") // Prevents infinite loops when printing relationships
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @SQLRestriction("deleted = false")
-public class Instructor extends  BaseEntity {
+public class Instructor extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -24,7 +25,7 @@ public class Instructor extends  BaseEntity {
 
     String email;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // Lazy loading is best practice for performance
     @JoinColumn(name = "department_id")
     Department department;
 }
