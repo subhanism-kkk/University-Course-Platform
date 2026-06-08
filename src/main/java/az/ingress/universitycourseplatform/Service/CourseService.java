@@ -38,10 +38,19 @@ public class CourseService {
     public CourseResponse createCourse(CourseRequest request) {
         var course = CourseMapper.toEntity(request);
 
+        if (request.getDepartmentId() != null){
+            var department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new NotFoundException("Department not found"));
 
+            course.setDepartment(department);
+        }
 
+        if (request.getInstructorId() != null){
+            var instructor = instructorRepository.findById(request.getInstructorId())
+                    .orElseThrow(() -> new NotFoundException("Instructor not found"));
 
-
+            course.setInstructor(instructor);
+        }
 
         var savedCourse = courseRepository.save(course);
 
