@@ -16,7 +16,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/instrucrors")
+@RequestMapping("api/v1/instructors")
 public class InstructorController {
 
     public final InstructorService instructorService;
