@@ -5,6 +5,7 @@ import az.ingress.universitycourseplatform.Model.dto.enrollment.EnrollmentRespon
 import az.ingress.universitycourseplatform.Model.dto.student.StudentRequest;
 import az.ingress.universitycourseplatform.Model.dto.student.StudentResponse;
 import az.ingress.universitycourseplatform.Service.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,7 @@ public class StudentController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public StudentResponse createStudent(@RequestBody StudentRequest request) {
+    public StudentResponse createStudent(@Valid @RequestBody StudentRequest request) {
         return studentService.createStudent(request);
     }
 
