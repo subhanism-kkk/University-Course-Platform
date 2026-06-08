@@ -37,6 +37,12 @@ public class CourseService {
     @Transactional
     public CourseResponse createCourse(CourseRequest request) {
         var course = CourseMapper.toEntity(request);
+
+
+
+
+
+
         var savedCourse = courseRepository.save(course);
 
         return CourseMapper.toResponse(savedCourse);

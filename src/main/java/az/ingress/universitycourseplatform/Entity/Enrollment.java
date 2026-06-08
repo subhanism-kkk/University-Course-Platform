@@ -4,6 +4,7 @@ import az.ingress.universitycourseplatform.Model.EnrollmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(of = "id", callSuper = false)
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@SQLRestriction("deleted = false")
 public class Enrollment extends BaseEntity {
 
     @Id

@@ -1,22 +1,11 @@
 package az.ingress.universitycourseplatform.Entity;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-@FilterDef(
-        name = "deletedFilter",
-        parameters = @ParamDef(name = "isDeleted", type = Boolean.class)
-)
-@Filter(
-        name = "deletedFilter",
-        condition = "deleted = :isDeleted"
-)
 public abstract class BaseEntity {
 
     @Column(nullable = false)
@@ -24,7 +13,6 @@ public abstract class BaseEntity {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
     public boolean isDeleted() {
         return deleted;
     }
